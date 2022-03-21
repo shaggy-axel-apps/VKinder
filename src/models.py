@@ -2,7 +2,7 @@ from random import randrange
 
 import vk_api
 from vk_api.longpoll import VkLongPoll
-from vk_config import GROUP_TOKEN
+from settings import GROUP_TOKEN
 
 import sqlalchemy as sq
 from sqlalchemy.ext.declarative import declarative_base
