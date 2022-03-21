@@ -1,3 +1,6 @@
+# Vkinder
+ - [Technical Requirements](https://github.com/shaggy-axel/VKinder/blob/master/TECH_REQUIREMENTS.md)
+
 ## Installation
 ```bash
 # clone repo and go to the folder VKinder
