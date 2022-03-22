@@ -4,7 +4,7 @@ from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
-from settings import GROUP_TOKEN
+from vkinder.settings import GROUP_TOKEN
 from db.models import Session, BlackList, DatingUser, User, Photos
 
 

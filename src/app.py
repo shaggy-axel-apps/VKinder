@@ -9,7 +9,7 @@ from services.message_handler import (
     loop_bot, menu_bot, reg_new_user,
     show_info, go_to_blacklist, go_to_favorites
 )
-from settings import MIN_AGE, MAX_AGE
+from vkinder.settings import MIN_AGE, MAX_AGE
 
 
 # Для работы с БД

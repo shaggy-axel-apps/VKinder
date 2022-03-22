@@ -1,4 +1,4 @@
-from settings import DB_CREDS
+from vkinder.settings import DB_CREDS
 
 import sqlalchemy as sq
 from sqlalchemy.ext.declarative import declarative_base

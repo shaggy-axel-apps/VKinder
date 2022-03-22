@@ -1,7 +1,7 @@
 from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from settings import GROUP_TOKEN
+from vkinder.settings import GROUP_TOKEN
 from db.queries import (
     write_msg, register_user, check_db_black, check_db_favorites,
     delete_db_blacklist, delete_db_favorites)

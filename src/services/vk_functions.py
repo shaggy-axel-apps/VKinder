@@ -2,7 +2,7 @@ from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll
 from vk_api.exceptions import ApiError
 
-from settings import GROUP_TOKEN, USER_TOKEN, V
+from vkinder.settings import GROUP_TOKEN, USER_TOKEN, V
 from db.models import engine, Session
 
 
