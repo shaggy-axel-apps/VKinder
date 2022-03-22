@@ -16,3 +16,7 @@ DB_CREDS = {
     "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
     "PORT": int(os.environ.get("POSTGRES_PORT", "5432"))
 }
+
+
+MIN_AGE = 18
+MAX_AGE = 99

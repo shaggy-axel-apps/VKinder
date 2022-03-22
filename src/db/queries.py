@@ -5,11 +5,13 @@ from vk_api.longpoll import VkLongPoll
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from settings import GROUP_TOKEN
-from db.models import session, BlackList, DatingUser, User, Photos
+from db.models import Session, BlackList, DatingUser, User, Photos
 
 
 vk = VkApi(token=GROUP_TOKEN)
 longpoll = VkLongPoll(vk)
+
+session = Session()
 
 
 # Удаляет пользователя из черного списка
