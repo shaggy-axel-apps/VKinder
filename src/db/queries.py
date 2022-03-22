@@ -1,76 +1,15 @@
 from random import randrange
 
-import vk_api
+from vk_api import VkApi
 from vk_api.longpoll import VkLongPoll
-from settings import GROUP_TOKEN
-
-import sqlalchemy as sq
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
+from settings import GROUP_TOKEN
+from db.models import session, BlackList, DatingUser, User, Photos
 
-# Подключение к БД
-Base = declarative_base()
 
-
-engine = sq.create_engine('postgresql://user@localhost:5432/vkinder_db',
-                          client_encoding='utf8')
-Session = sessionmaker(bind=engine)
-
-# Для работы с ВК
-vk = vk_api.VkApi(token=GROUP_TOKEN)
+vk = VkApi(token=GROUP_TOKEN)
 longpoll = VkLongPoll(vk)
-# Для работы с БД
-session = Session()
-connection = engine.connect()
-
-
-# Пользователь бота ВК
-class User(Base):
-    __tablename__ = 'user'
-    id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    vk_id = sq.Column(sq.Integer, unique=True)
-
-
-# Анкеты добавленные в избранное
-class DatingUser(Base):
-    __tablename__ = 'dating_user'
-    id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    vk_id = sq.Column(sq.Integer, unique=True)
-    first_name = sq.Column(sq.String)
-    second_name = sq.Column(sq.String)
-    city = sq.Column(sq.String)
-    link = sq.Column(sq.String)
-    id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
-
-
-# Фото избранных анкет
-class Photos(Base):
-    __tablename__ = 'photos'
-    id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    link_photo = sq.Column(sq.String)
-    count_likes = sq.Column(sq.Integer)
-    id_dating_user = sq.Column(sq.Integer, sq.ForeignKey('dating_user.id', ondelete='CASCADE'))
-
-
-# Анкеты в черном списке
-class BlackList(Base):
-    __tablename__ = 'black_list'
-    id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    vk_id = sq.Column(sq.Integer, unique=True)
-    first_name = sq.Column(sq.String)
-    second_name = sq.Column(sq.String)
-    city = sq.Column(sq.String)
-    link = sq.Column(sq.String)
-    link_photo = sq.Column(sq.String)
-    count_likes = sq.Column(sq.Integer)
-    id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
-
-
-""" 
-ФУНКЦИИ РАБОТЫ С БД
-"""
 
 
 # Удаляет пользователя из черного списка
@@ -203,7 +142,3 @@ def add_to_black_list(event_id, vk_id, first_name, second_name, city, link, link
         write_msg(event_id,
                   'Пользователь уже в черном списке.')
         return False
-
-
-if __name__ == '__main__':
-    Base.metadata.create_all(engine)
