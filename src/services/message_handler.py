@@ -49,7 +49,7 @@ def go_to_favorites(ids):
     alls_users = check_db_favorites(ids)
     write_msg(ids, f'Избранные анкеты:')
     for nums, users in enumerate(alls_users):
-        write_msg(ids, f'{users.first_name}, {users.second_name}, {users.link}')
+        write_msg(ids, f'{users.first_name}, {users.last_name}, {users.link}')
         write_msg(ids, '1 - Удалить из избранного, 0 - Далее \nq - Выход')
         msg_texts, user_ids = loop_bot()
         if msg_texts == '0':
@@ -72,7 +72,7 @@ def go_to_blacklist(ids):
     all_users = check_db_black(ids)
     write_msg(ids, f'Анкеты в черном списке:')
     for num, user in enumerate(all_users):
-        write_msg(ids, f'{user.first_name}, {user.second_name}, {user.link}')
+        write_msg(ids, f'{user.first_name}, {user.last_name}, {user.link}')
         write_msg(ids, '1 - Удалить из черного списка, 0 - Далее \nq - Выход')
         msg_texts, user_ids = loop_bot()
         if msg_texts == '0':

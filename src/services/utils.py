@@ -20,7 +20,7 @@ def json_create(lst):
     for info in lst:
         res['data'] = today_str
         res['first_name'] = info[0]
-        res['second_name'] = info[1]
+        res['last_name'] = info[1]
         res['link'] = info[2]
         res['id'] = info[3]
         res_list.append(res.copy())

@@ -80,13 +80,13 @@ def register_user(vk_id: int) -> bool:
 
 def add_user(
     event_id: int, vk_id: int, first_name: str,
-    second_name: str, city: str, link: str, id_user: int
+    last_name: str, city: str, link: str, id_user: int
 ) -> bool:
     """ Сохранение выбранного пользователя в БД """
     try:
         new_user = DatingUser(
             vk_id=vk_id,
-            first_name=first_name, second_name=second_name,
+            first_name=first_name, last_name=last_name,
             city=city, link=link, id_user=id_user
         )
         session.add(new_user)
@@ -122,14 +122,14 @@ def add_user_photos(
 
 def add_to_black_list(
     event_id: int, vk_id: int, first_name: str,
-    second_name: str, city: str, link: str,
+    last_name: str, city: str, link: str,
     link_photo: str, count_likes: int, id_user: int
 ) -> bool:
     """ Добавление пользователя в черный список """
     try:
         new_user = BlackList(
             vk_id=vk_id,
-            first_name=first_name, second_name=second_name,
+            first_name=first_name, last_name=last_name,
             city=city, link=link, link_photo=link_photo,
             count_likes=count_likes, id_user=id_user
         )

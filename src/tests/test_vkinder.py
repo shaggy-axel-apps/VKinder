@@ -34,11 +34,11 @@ class TestVkinderDB:
         """ Тест первичной регистрации юзера """
         assert register_user(vk_id) == result
 
-    @pytest.mark.parametrize('event_id, vk_id, first_name, second_name, city, link, id_user, result',
+    @pytest.mark.parametrize('event_id, vk_id, first_name, last_name, city, link, id_user, result',
                              [('7717001', '2', 'goga', 'boba', 'Turkey', 'www.vkman.ru', '1', False)])
-    def test_add_user(self, event_id, vk_id, first_name, second_name, city, link, id_user, result):
+    def test_add_user(self, event_id, vk_id, first_name, last_name, city, link, id_user, result):
         """ Тест добавление пользователя """
-        assert add_user(event_id, vk_id, first_name, second_name, city, link, id_user) == result
+        assert add_user(event_id, vk_id, first_name, last_name, city, link, id_user) == result
 
     @pytest.mark.parametrize('event_id, link_photo, count_likes, id_dating_user, result',
                              [('123', 'link_link', '2', '33502052', False)])
@@ -50,13 +50,13 @@ class TestVkinderDB:
 class TestVkinderBlackList:
     """ Тесты Черного Списка """
     @pytest.mark.parametrize(
-        'event_id, vk_id, first_name, second_name, city, link, link_photo, count_likes, id_user, result',
+        'event_id, vk_id, first_name, last_name, city, link, link_photo, count_likes, id_user, result',
         [('123', '12', '12434', '1251231', 'sdfsdfs', 'sfsdfsdfds', 'fsdfsdfs', '12', '123', False)])
     def test_add_user_to_black_list(
-        self, event_id, vk_id, first_name, second_name,
+        self, event_id, vk_id, first_name, last_name,
         city, link, link_photo, count_likes,
         id_user, result
     ):
         """ Добавление в черный список """
-        assert add_to_black_list(event_id, vk_id, first_name, second_name, city, link, link_photo, count_likes,
+        assert add_to_black_list(event_id, vk_id, first_name, last_name, city, link, link_photo, count_likes,
                                  id_user) == result
