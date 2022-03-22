@@ -14,28 +14,28 @@ longpoll = VkLongPoll(vk)
 session = Session()
 
 
-# Удаляет пользователя из черного списка
-def delete_db_blacklist(ids):
+def delete_db_blacklist(ids: int) -> None:
+    """ Удаляет пользователя из черного списка """
     current_user = session.query(BlackList).filter_by(vk_id=ids).first()
     session.delete(current_user)
     session.commit()
 
 
-# Удаляет пользователя из избранного
-def delete_db_favorites(ids):
+def delete_db_favorites(ids: int) -> None:
+    """ Удаляет пользователя из избранного """
     current_user = session.query(DatingUser).filter_by(vk_id=ids).first()
     session.delete(current_user)
     session.commit()
 
 
-# проверят зареган ли пользователь бота в БД
-def check_db_master(ids):
+def check_db_master(ids: int) -> int:
+    """ проверят зареган ли пользователь бота в БД """
     current_user_id = session.query(User).filter_by(vk_id=ids).first()
     return current_user_id
 
 
-# проверят есть ли юзер в бд
-def check_db_user(ids):
+def check_db_user(ids: int) -> tuple[DatingUser, BlackList]:
+    """ проверят есть ли юзер в бд """
     dating_user = session.query(DatingUser).filter_by(
         vk_id=ids).first()
     blocked_user = session.query(BlackList).filter_by(
@@ -43,24 +43,23 @@ def check_db_user(ids):
     return dating_user, blocked_user
 
 
-# Проверят есть ли юзер в черном списке
-def check_db_black(ids):
+def check_db_black(ids: int):
+    """ Проверят есть ли юзер в черном списке """
     current_users_id = session.query(User).filter_by(vk_id=ids).first()
     # Находим все анкеты из избранного которые добавил данный юзер
     all_users = session.query(BlackList).filter_by(id_user=current_users_id.id).all()
     return all_users
 
 
-# Проверяет есть ли юзер в избранном
-def check_db_favorites(ids):
+def check_db_favorites(ids: int) -> list[DatingUser]:
+    """ Проверяет есть ли юзер в избранном """
     current_users_id = session.query(User).filter_by(vk_id=ids).first()
     # Находим все анкеты из избранного которые добавил данный юзер
-    alls_users = session.query(DatingUser).filter_by(id_user=current_users_id.id).all()
-    return alls_users
+    return session.query(DatingUser).filter_by(id_user=current_users_id.id).all()
 
 
-# Пишет сообщение пользователю
-def write_msg(user_id, message, attachment=None):
+def write_msg(user_id: int, message: str, attachment=None) -> None:
+    """ Пишет сообщение пользователю """
     vk.method('messages.send',
               {'user_id': user_id,
                'message': message,
@@ -68,29 +67,27 @@ def write_msg(user_id, message, attachment=None):
                'attachment': attachment})
 
 
-# Регистрация пользователя
-def register_user(vk_id):
+def register_user(vk_id: int) -> bool:
+    """ Регистрация пользователя """
     try:
-        new_user = User(
-            vk_id=vk_id
-        )
+        new_user = User(vk_id=vk_id)
         session.add(new_user)
         session.commit()
-        return True
     except (IntegrityError, InvalidRequestError):
         return False
+    return True
 
 
-# Сохранение выбранного пользователя в БД
-def add_user(event_id, vk_id, first_name, second_name, city, link, id_user):
+def add_user(
+    event_id: int, vk_id: int, first_name: str,
+    second_name: str, city: str, link: str, id_user: int
+) -> bool:
+    """ Сохранение выбранного пользователя в БД """
     try:
         new_user = DatingUser(
             vk_id=vk_id,
-            first_name=first_name,
-            second_name=second_name,
-            city=city,
-            link=link,
-            id_user=id_user
+            first_name=first_name, second_name=second_name,
+            city=city, link=link, id_user=id_user
         )
         session.add(new_user)
         session.commit()
@@ -103,8 +100,11 @@ def add_user(event_id, vk_id, first_name, second_name, city, link, id_user):
         return False
 
 
-# Сохранение в БД фото добавленного пользователя
-def add_user_photos(event_id, link_photo, count_likes, id_dating_user):
+def add_user_photos(
+    event_id: int, link_photo: str,
+    count_likes: int, id_dating_user: int
+) -> bool:
+    """ Сохранение в БД фото добавленного пользователя """
     try:
         new_user = Photos(
             link_photo=link_photo,
@@ -113,34 +113,30 @@ def add_user_photos(event_id, link_photo, count_likes, id_dating_user):
         )
         session.add(new_user)
         session.commit()
-        write_msg(event_id,
-                  'Фото пользователя сохранено в избранном')
-        return True
+        write_msg(event_id, 'Фото пользователя сохранено в избранном')
     except (IntegrityError, InvalidRequestError):
-        write_msg(event_id,
-                  'Невозможно добавить фото этого пользователя(Уже сохранено)')
+        write_msg(event_id, 'Фото уже сохранено)')
         return False
+    return True
 
 
-# Добавление пользователя в черный список
-def add_to_black_list(event_id, vk_id, first_name, second_name, city, link, link_photo, count_likes, id_user):
+def add_to_black_list(
+    event_id: int, vk_id: int, first_name: str,
+    second_name: str, city: str, link: str,
+    link_photo: str, count_likes: int, id_user: int
+) -> bool:
+    """ Добавление пользователя в черный список """
     try:
         new_user = BlackList(
             vk_id=vk_id,
-            first_name=first_name,
-            second_name=second_name,
-            city=city,
-            link=link,
-            link_photo=link_photo,
-            count_likes=count_likes,
-            id_user=id_user
+            first_name=first_name, second_name=second_name,
+            city=city, link=link, link_photo=link_photo,
+            count_likes=count_likes, id_user=id_user
         )
         session.add(new_user)
         session.commit()
-        write_msg(event_id,
-                  'Пользователь успешно заблокирован.')
-        return True
+        write_msg(event_id, 'Пользователь успешно заблокирован.')
     except (IntegrityError, InvalidRequestError):
-        write_msg(event_id,
-                  'Пользователь уже в черном списке.')
+        write_msg(event_id, 'Пользователь уже в черном списке.')
         return False
+    return True
