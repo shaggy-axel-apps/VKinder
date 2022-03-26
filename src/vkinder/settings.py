@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 # ENVIRONMENT SETTINGS
 load_dotenv()
-V = os.environ.get("V", "")
+V = 5.131
 GROUP_TOKEN = os.environ.get("GROUP_TOKEN", "")
 USER_TOKEN = os.environ.get("USER_TOKEN", "")
 
@@ -34,3 +34,9 @@ MIGRATE_COMMAND = "migrate"
 # AGE RANGE FOR SEARCHING
 MIN_AGE = 18
 MAX_AGE = 99
+
+# MAIN BUTTONS
+BUTTONS = [
+    "Start", "Help", "Sign Up",
+    "Find Pair", "Favorites", "BlackList"
+]
