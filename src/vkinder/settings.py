@@ -31,12 +31,15 @@ Base = declarative_base()
 START_COMMAND = "start"
 MIGRATE_COMMAND = "migrate"
 
-# AGE RANGE FOR SEARCHING
+# SEARCHING SETTINGS
+MALE = ("мальчик", "парень", "мужчина")
+FEMALE = ("девочка", "девушка", "женщина")
+START_SEARCH_WORDS = (*MALE, *FEMALE)
 MIN_AGE = 18
 MAX_AGE = 99
 
 # MAIN BUTTONS
 BUTTONS = [
-    "Start", "Help", "Sign Up",
-    "Find Pair", "Favorites", "BlackList"
+    "Help", "Find Pair",
+    "Favorites", "BlackList"
 ]
