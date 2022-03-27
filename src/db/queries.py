@@ -3,7 +3,7 @@ from vk_api.longpoll import VkLongPoll
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from vkinder.settings import GROUP_TOKEN
-from db.models import Session, BlackList, DatingUser, User, Photos
+from db.models import Session, BlackList, DatingUser, User
 
 vk = VkApi(token=GROUP_TOKEN)
 longpoll = VkLongPoll(vk)
@@ -36,8 +36,8 @@ def delete_from_favorites(vk_id: int) -> None:
     session.commit()
 
 
-def get_user(vk_id: int) -> int:
-    """ проверят зареган ли пользователь бота в БД """
+def get_user(vk_id: int) -> User:
+    """ получаем пользователя по `vk_id` """
     return session.query(User).filter_by(vk_id=vk_id).first()
 
 
@@ -62,33 +62,13 @@ def get_users_from_favorites(vk_id: int) -> list[DatingUser]:
     return session.query(DatingUser).filter_by(id_user=user.id).all()
 
 
-def add_pair_photos(
-    link_photo: str, count_likes: int, id_dating_user: int
-) -> bool:
-    """ Сохранение в БД фото добавленного пользователя """
-    try:
-        new_user = Photos(
-            link_photo=link_photo,
-            count_likes=count_likes,
-            id_dating_user=id_dating_user
-        )
-        session.add(new_user)
-        session.commit()
-        return 'Фото пользователя сохранено в избранном'
-    except (IntegrityError, InvalidRequestError):
-        return 'Фото уже сохранено'
-
-
 def add_pair_to_favorites(
-    vk_id: int, first_name: str,
-    last_name: str, city: str, link: str, id_user: int
+    vk_id: int, id_user: int
 ) -> bool:
     """ Сохранение выбранного пользователя в БД """
     try:
         new_user = DatingUser(
-            vk_id=vk_id,
-            first_name=first_name, last_name=last_name,
-            city=city, link=link, id_user=id_user
+            vk_id=vk_id, id_user=id_user
         )
         session.add(new_user)
         session.commit()
@@ -98,17 +78,12 @@ def add_pair_to_favorites(
 
 
 def add_pair_to_blacklist(
-    vk_id: int, first_name: str,
-    last_name: str, city: str, link: str,
-    link_photo: str, count_likes: int, id_user: int
+    vk_id: int, id_user: int
 ) -> bool:
     """ Добавление пользователя в черный список """
     try:
         new_user = BlackList(
-            vk_id=vk_id,
-            first_name=first_name, last_name=last_name,
-            city=city, link=link, link_photo=link_photo,
-            count_likes=count_likes, id_user=id_user
+            vk_id=vk_id, id_user=id_user
         )
         session.add(new_user)
         session.commit()

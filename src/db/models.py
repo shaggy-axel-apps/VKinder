@@ -20,35 +20,18 @@ class User(Base):
 class DatingUser(Base):
     """ Анкеты добавленные в избранное """
     __tablename__ = 'dating_user'
+    __table_args__ = sq.UniqueConstraint('vk_id', 'id_user', name="unique__vk_id__user_id")
     id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    vk_id = sq.Column(sq.Integer, unique=True)
-    first_name = sq.Column(sq.String)
-    last_name = sq.Column(sq.String)
-    city = sq.Column(sq.String)
-    link = sq.Column(sq.String)
+    vk_id = sq.Column(sq.Integer)
     id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
-
-
-class Photos(Base):
-    """ Фото избранных анкет """
-    __tablename__ = 'photos'
-    id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    link_photo = sq.Column(sq.String)
-    count_likes = sq.Column(sq.Integer)
-    id_dating_user = sq.Column(sq.Integer, sq.ForeignKey('dating_user.id', ondelete='CASCADE'))
 
 
 class BlackList(Base):
     """ Анкеты в черном списке """
     __tablename__ = 'black_list'
+    __table_args__ = sq.UniqueConstraint('vk_id', 'id_user', name="unique__vk_id__user_id")
     id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
-    vk_id = sq.Column(sq.Integer, unique=True)
-    first_name = sq.Column(sq.String)
-    last_name = sq.Column(sq.String)
-    city = sq.Column(sq.String)
-    link = sq.Column(sq.String)
-    link_photo = sq.Column(sq.String)
-    count_likes = sq.Column(sq.Integer)
+    vk_id = sq.Column(sq.Integer)
     id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
 
 
