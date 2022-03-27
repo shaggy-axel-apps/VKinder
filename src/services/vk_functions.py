@@ -21,7 +21,7 @@ session = Session()
 connection = engine.connect()
 
 
-def search_users(sex: int, age_at: int, age_to: int, city: str) -> list[Person]:
+def search_users_api(sex: int, age_at: int, age_to: int, city: str) -> list[Person]:
     """ Ищет людей по критериям """
     all_persons = []
     link_profile = 'https://vk.com/id'

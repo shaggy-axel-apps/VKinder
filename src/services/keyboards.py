@@ -19,7 +19,7 @@ def get_remove_keyboard(table: str, vk_id: int) -> VkKeyboard:
     kb.add_button(f"Remove from {table}: {vk_id}", color=VkKeyboardColor.NEGATIVE)
 
 
-def get_user_rate_keyboard() -> VkKeyboard:
+def get_user_rate_keyboard(vk_id: int) -> VkKeyboard:
     kb = VkKeyboard(one_time=False, inline=True)
-    kb.add_button("Add to Favorites")
-    kb.add_button("Add to BlackList")
+    kb.add_button(f"Add to Favorites: {vk_id}", color=VkKeyboardColor.POSITIVE)
+    kb.add_button(f"Add to BlackList: {vk_id}", color=VkKeyboardColor.POSITIVE)

@@ -2,7 +2,7 @@ from db.queries import (
     get_users_from_black_list, get_users_from_favorites,
     check_pair_already_exists
 )
-from services.vk_functions import write_msg, get_photo
+from services.vk_functions import write_msg, get_photo, search_users_api
 from services.keyboards import (
     get_menu_keyboard, get_remove_keyboard, get_user_rate_keyboard
 )
@@ -22,7 +22,7 @@ def search_users(vk_id: int, message: str) -> None:
     age_from, age_to = get_age_from_message(vk_id, message)
     city = message.split()[2].lower()
 
-    result = search_users(sex, age_from, age_to, city)
+    result = search_users_api(sex, age_from, age_to, city)
     # Производим отбор анкет
     for user in result:
         if check_pair_already_exists(user.vk_id):
@@ -35,16 +35,14 @@ def search_users(vk_id: int, message: str) -> None:
 
         user_photos = sort_photo(user_photos)
 
-        keyboard = get_user_rate_keyboard()
+        keyboard = get_user_rate_keyboard(user.vk_id)
         # Выводим отсортированные данные по анкетам
         write_msg(
-            vk_id, f'{user.first_name}  {user.last_name}\n{user.link}',
+            vk_id, f'{user.first_name} {user.last_name}\n{user.link}',
             attachment=','.join(
-                [
-                    user_photo.photo
-                    for counter, user_photo in enumerate(user_photos)
-                    if counter < 3
-                ]
+                [user_photo.photo
+                 for counter, user_photo in enumerate(user_photos)
+                 if counter < 3]
             ),
             keyboard=keyboard
         )
