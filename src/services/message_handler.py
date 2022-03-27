@@ -6,7 +6,7 @@ from services.vk_functions import write_msg, get_photo
 from services.keyboards import (
     get_menu_keyboard, get_remove_keyboard, get_user_rate_keyboard
 )
-from services.parsers import get_sex_from_message, get_age_from_message
+from services.validators import get_sex_from_message, get_age_from_message
 from services.utils import sort_photo
 
 

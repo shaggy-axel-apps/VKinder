@@ -1,4 +1,4 @@
-from message_handler import (
+from services.message_handler import (
     menu_bot, go_to_blacklist,
     go_to_favorites, does_not_exists,
     search_users
