@@ -2,29 +2,31 @@ from services import COMMANDS, search_users
 from services.vk_functions import write_msg
 from db.queries import (
     delete_from_blacklist, delete_from_favorites,
-    add_pair_to_blacklist, add_pair_to_favorites
+    add_pair_to_blacklist, add_pair_to_favorites, get_user
 )
 from vkinder.settings import START_SEARCH_WORDS
 
 
 def blacklist_parser(vk_id, message: str, add: bool):
-    blacklist_vk_id = message.split()[-1]
+    blacklist_vk_id = int(message.split()[-1])
+    current_user = get_user(vk_id)
     if add:
-        add_pair_to_blacklist(vk_id=blacklist_vk_id, id_user=vk_id)
-        write_msg(vk_id, f'Анкета пользователя {blacklist_vk_id} успешно добавлена')
+        message = add_pair_to_blacklist(vk_id=blacklist_vk_id, user_id=current_user.id)
+        write_msg(vk_id, message)
     else:
-        delete_from_blacklist(vk_id=blacklist_vk_id, id_user=vk_id)
-        write_msg(vk_id, f'Анкета пользователя {blacklist_vk_id} успешно удалена')
+        message = delete_from_blacklist(vk_id=blacklist_vk_id, user_id=current_user.id)
+        write_msg(vk_id, message)
 
 
 def favorites_parser(vk_id, message: str, add: bool):
-    favorites_vk_id = message.split()[-1]
+    favorites_vk_id = int(message.split()[-1])
+    current_user = get_user(vk_id)
     if add:
-        add_pair_to_favorites(vk_id=favorites_vk_id, id_user=vk_id)
-        write_msg(vk_id, f'Анкета пользователя {favorites_vk_id} успешно добавлена')
+        message = add_pair_to_favorites(vk_id=favorites_vk_id, user_id=current_user.id)
+        write_msg(vk_id, message)
     else:
-        delete_from_favorites(vk_id=favorites_vk_id, id_user=vk_id)
-        write_msg(vk_id, f'Анкета пользователя {favorites_vk_id} успешно удалена')
+        message = delete_from_favorites(vk_id=favorites_vk_id, user_id=current_user.id)
+        write_msg(vk_id, message)
 
 
 def parse_message(vk_id: int, message: str):

@@ -57,7 +57,8 @@ def go_to_favorites(vk_id: int) -> None:
     write_msg(vk_id, f'Избранные анкеты:')
     for user in all_users:
         keyboard = get_remove_keyboard("Favorites", user.vk_id)
-        write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
+        write_msg(vk_id, f'{user.vk_id}', keyboard=keyboard)
+        # write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
 
 
 def go_to_blacklist(vk_id: int) -> None:
@@ -66,7 +67,8 @@ def go_to_blacklist(vk_id: int) -> None:
     write_msg(vk_id, 'Анкеты в черном списке:')
     for user in all_users:
         keyboard = get_remove_keyboard("BlackList", user.vk_id)
-        write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
+        write_msg(vk_id, f'{user.vk_id}', keyboard=keyboard)
+        # write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
 
 
 def does_not_exists(vk_id: int) -> None:
