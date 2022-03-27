@@ -1,24 +1,25 @@
 import datetime
 import json
 
+from db.tuple_models import Photo
 
-# Сортируем фото по лайкам, удаляем лишние элементы
-def sort_likes(photos):
+
+def sort_photo(photos: list[Photo]) -> list[Photo]:
+    """ Сортируем фото по лайкам, удаляем лишние элементы """
     result = []
-    for element in photos:
-        if element != ['нет фото.'] and photos != 'нет доступа к фото':
-            result.append(element)
-    return sorted(result)
+    for photo in photos:
+        if photo.photo:
+            result.append(photo)
+    return sorted(result, key=lambda photo: photo.popular)
 
 
-# JSON file create with result of programm
 def json_create(lst):
+    """ JSON file create with result of programm """
     today = datetime.date.today()
-    today_str = f'{today.day}.{today.month}.{today.year}'
     res = {}
     res_list = []
     for info in lst:
-        res['data'] = today_str
+        res['date'] = str(today)
         res['first_name'] = info[0]
         res['last_name'] = info[1]
         res['link'] = info[2]
@@ -29,4 +30,3 @@ def json_create(lst):
         json.dump(res_list, write_file, ensure_ascii=False)
 
     print(f'Информация о загруженных файлах успешно записана в json файл.')
-

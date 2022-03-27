@@ -1,92 +1,72 @@
-from vk_api import VkApi
-from vk_api.longpoll import VkLongPoll, VkEventType
-
-from vkinder.settings import GROUP_TOKEN
 from db.queries import (
-    write_msg, register_user, check_db_black, check_db_favorites,
-    delete_db_blacklist, delete_db_favorites)
+    get_users_from_black_list, get_users_from_favorites,
+    check_pair_already_exists
+)
+from services.vk_functions import write_msg, get_photo
+from services.keyboards import (
+    get_menu_keyboard, get_remove_keyboard, get_user_rate_keyboard
+)
+from services.parsers import get_sex_from_message, get_age_from_message
+from services.utils import sort_photo
 
 
-vk = VkApi(token=GROUP_TOKEN)
-longpoll = VkLongPoll(vk)
+def menu_bot(vk_id: int) -> None:
+    keyboard = get_menu_keyboard()
+    message = ("Вас приветствует бот - Vkinder")
+    write_msg(vk_id, message=message, keyboard=keyboard)
 
 
-def loop_bot() -> tuple[str, int]:
-    for this_event in longpoll.listen():
-        if this_event.type == VkEventType.MESSAGE_NEW:
-            if this_event.to_me:
-                message_text = this_event.text
-                return message_text, this_event.user_id
+def search_users(vk_id: int, message: str) -> None:
+    """ search required pair for user """
+    sex = get_sex_from_message(message)
+    age_from, age_to = get_age_from_message(vk_id, message)
+    city = message.split()[2].lower()
+
+    result = search_users(sex, age_from, age_to, city)
+    # Производим отбор анкет
+    for user in result:
+        if check_pair_already_exists(user.vk_id):
+            continue
+
+        # Получаем фото и сортируем по лайкам
+        user_photos = get_photo(user.vk_id)
+        if not user_photos:
+            continue
+
+        user_photos = sort_photo(user_photos)
+
+        keyboard = get_user_rate_keyboard()
+        # Выводим отсортированные данные по анкетам
+        write_msg(
+            vk_id, f'{user.first_name}  {user.last_name}\n{user.link}',
+            attachment=','.join(
+                [
+                    user_photo.photo
+                    for counter, user_photo in enumerate(user_photos)
+                    if counter < 3
+                ]
+            ),
+            keyboard=keyboard
+        )
 
 
-def menu_bot(id_num):
-    write_msg(id_num,
-              f"Вас приветствует бот - Vkinder\n"
-              f"\nЕсли вы используете его первый раз - пройдите регистрацию.\n"
-              f"Для регистрации введите - Да.\n"
-              f"Если вы уже зарегистрированы - начинайте поиск.\n"
-              f"\nДля поиска - девушка 18-25 Москва\n"
-              f"Перейти в избранное нажмите - 2\n"
-              f"Перейти в черный список - 0\n")
+def go_to_favorites(vk_id: int) -> None:
+    """ Send users from favorites list """
+    all_users = get_users_from_favorites(vk_id)
+    write_msg(vk_id, f'Избранные анкеты:')
+    for user in all_users:
+        keyboard = get_remove_keyboard("Favorites", user.vk_id)
+        write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
 
 
-def show_info(user_id):
-    write_msg(user_id, f'Это была последняя анкета.'
-                       f'Перейти в избранное - 2'
-                       f'Перейти в черный список - 0'
-                       f'Поиск - девушка 18-35 белгород'
-                       f'Меню бота - Vkinder')
+def go_to_blacklist(vk_id: int) -> None:
+    """ Send users from black list """
+    all_users = get_users_from_black_list(vk_id)
+    write_msg(vk_id, 'Анкеты в черном списке:')
+    for user in all_users:
+        keyboard = get_remove_keyboard("BlackList", user.vk_id)
+        write_msg(vk_id, f'{user.first_name}, {user.last_name}, {user.link}', keyboard=keyboard)
 
 
-def reg_new_user(id_num):
-    write_msg(id_num, 'Вы прошли регистрацию.')
-    write_msg(id_num,
-              f"Vkinder - для активации бота\n")
-    register_user(id_num)
-
-
-def go_to_favorites(ids):
-    alls_users = check_db_favorites(ids)
-    write_msg(ids, f'Избранные анкеты:')
-    for nums, users in enumerate(alls_users):
-        write_msg(ids, f'{users.first_name}, {users.last_name}, {users.link}')
-        write_msg(ids, '1 - Удалить из избранного, 0 - Далее \nq - Выход')
-        msg_texts, user_ids = loop_bot()
-        if msg_texts == '0':
-            if nums >= len(alls_users) - 1:
-                write_msg(user_ids, f'Это была последняя анкета.\n'
-                                    f'Vkinder - вернуться в меню\n')
-        # Удаляем запись из бд - избранное
-        elif msg_texts == '1':
-            delete_db_favorites(users.vk_id)
-            write_msg(user_ids, f'Анкета успешно удалена.')
-            if nums >= len(alls_users) - 1:
-                write_msg(user_ids, f'Это была последняя анкета.\n'
-                                    f'Vkinder - вернуться в меню\n')
-        elif msg_texts.lower() == 'q':
-            write_msg(ids, 'Vkinder - для активации бота.')
-            break
-
-
-def go_to_blacklist(ids):
-    all_users = check_db_black(ids)
-    write_msg(ids, f'Анкеты в черном списке:')
-    for num, user in enumerate(all_users):
-        write_msg(ids, f'{user.first_name}, {user.last_name}, {user.link}')
-        write_msg(ids, '1 - Удалить из черного списка, 0 - Далее \nq - Выход')
-        msg_texts, user_ids = loop_bot()
-        if msg_texts == '0':
-            if num >= len(all_users) - 1:
-                write_msg(user_ids, f'Это была последняя анкета.\n'
-                                    f'Vkinder - вернуться в меню\n')
-        # Удаляем запись из бд - черный список
-        elif msg_texts == '1':
-            print(user.id)
-            delete_db_blacklist(user.vk_id)
-            write_msg(user_ids, f'Анкета успешно удалена')
-            if num >= len(all_users) - 1:
-                write_msg(user_ids, f'Это была последняя анкета.\n'
-                                    f'Vkinder - вернуться в меню\n')
-        elif msg_texts.lower() == 'q':
-            write_msg(ids, 'Vkinder - для активации бота.')
-            break
+def does_not_exists(vk_id: int) -> None:
+    write_msg(vk_id, 'Команда не найдена')
