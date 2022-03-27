@@ -36,18 +36,18 @@ def delete_from_favorites(vk_id: int) -> None:
     session.commit()
 
 
-def check_registration(vk_id: int) -> int:
+def get_user(vk_id: int) -> int:
     """ проверят зареган ли пользователь бота в БД """
     return session.query(User).filter_by(vk_id=vk_id).first()
 
 
-def check_pair_already_exists(vk_id: int) -> tuple[DatingUser, BlackList]:
+def check_pair_already_exists(vk_id: int) -> bool:
     """ проверят есть ли юзер в бд """
     dating_user = session.query(DatingUser).filter_by(
         vk_id=vk_id).first()
     blocked_user = session.query(BlackList).filter_by(
         vk_id=vk_id).first()
-    return dating_user, blocked_user
+    return bool(dating_user) or bool(blocked_user)
 
 
 def get_users_from_black_list(vk_id: int) -> list[BlackList]:
