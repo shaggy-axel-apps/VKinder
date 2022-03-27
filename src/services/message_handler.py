@@ -18,9 +18,12 @@ def menu_bot(vk_id: int) -> None:
 
 def search_users(vk_id: int, message: str) -> None:
     """ search required pair for user """
-    sex = get_sex_from_message(message)
-    age_from, age_to = get_age_from_message(vk_id, message)
-    city = message.split()[2].lower()
+    try:
+        sex = get_sex_from_message(message)
+        age_from, age_to = get_age_from_message(vk_id, message)
+        city = message.split()[2].capitalize()
+    except IndexError:
+        return write_msg(vk_id, "invalid searching parametrs, try again")
 
     result = search_users_api(sex, age_from, age_to, city)
     # Производим отбор анкет
