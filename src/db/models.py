@@ -19,20 +19,26 @@ class User(Base):
 
 class DatingUser(Base):
     """ Анкеты добавленные в избранное """
-    __tablename__ = 'dating_user'
-    __table_args__ = sq.UniqueConstraint('vk_id', 'id_user', name="unique__vk_id__user_id")
     id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
     vk_id = sq.Column(sq.Integer)
-    id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
+
+    __tablename__ = 'dating_user'
+    __table_args__ = (
+        sq.UniqueConstraint('vk_id', 'user_id', name="unique__dating_user__vk_id__user_id"),
+    )
 
 
 class BlackList(Base):
     """ Анкеты в черном списке """
-    __tablename__ = 'black_list'
-    __table_args__ = sq.UniqueConstraint('vk_id', 'id_user', name="unique__vk_id__user_id")
     id = sq.Column(sq.Integer, primary_key=True, autoincrement=True)
     vk_id = sq.Column(sq.Integer)
-    id_user = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
+    user_id = sq.Column(sq.Integer, sq.ForeignKey('user.id', ondelete='CASCADE'))
+
+    __tablename__ = 'black_list'
+    __table_args__ = (
+        sq.UniqueConstraint('vk_id', 'user_id', name="unique__black_list__vk_id__user_id"),
+    )
 
 
 def create_all(**options):
